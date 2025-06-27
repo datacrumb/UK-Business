@@ -43,19 +43,20 @@ class GoogleSheets:
         rows = self.sheet.get_all_values()
         return rows[1:]  # Skip header
 
-    def get_existing_names(self) -> set:
+    def get_existing_detail_urls(self) -> set:
         existing_rows = self.get_existing_rows()
-        # Assuming company name is in the first column
-        return set(row[0].strip().lower() for row in existing_rows if row and row[0].strip())
+        # Detail Page URL is column 4 (index 3)
+        return set(row[3].strip() for row in existing_rows if len(row) > 3 and row[3].strip())
+
 
     def save_to_google_sheets(self, articles: List[ArticleModel]):
         try:
-            existing_names = self.get_existing_names()
+            existing_urls = self.get_existing_detail_urls()
             rows_to_add = []
 
             for article in articles:
-                name = str(article.company_name or "N/A").strip().lower()
-                if name in existing_names:
+                url = str(article.detail_page_url or "N/A")
+                if url in existing_urls:
                     continue
 
                 row = [
@@ -85,7 +86,7 @@ class GoogleSheets:
                 ]
 
                 rows_to_add.append(row)
-                existing_names.add(name)
+                existing_urls.add(url)
 
             if rows_to_add:
                 self.sheet.append_rows(rows_to_add, value_input_option="USER_ENTERED")
