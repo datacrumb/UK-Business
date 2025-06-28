@@ -118,7 +118,7 @@ async def scrapper():
 
                             print(f"📋 Scraped: {name}")
                             sheets.save_to_google_sheets([article])
-                            existing_urls.add(name)
+                            existing_urls.add(url)
                             print(f"✅ Saved: {name}")
 
                         except Exception as e:
